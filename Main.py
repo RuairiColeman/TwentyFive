@@ -1,5 +1,6 @@
 from Deck import Deck
 from Player import Player
+from Rules import Rules
 
 def main():
     # Initialize the deck and shuffle it
@@ -17,14 +18,24 @@ def main():
     # Initialize players using the names provided
     players = [Player(name) for name in player_names]
 
+    # Initialize the Rules object with the players
+    rules = Rules(players)
+
     # Deal 5 cards to each player
     for _ in range(5):
         for player in players:
             player.draw_card(deck)
 
+    # Display the trump card and handle the Ace scenario
+    trump_card = rules.display_trump_card()
+    rules.deals_ace(trump_card)
+
     # Display each player's hand
     for player in players:
         print(f"{player.name}'s hand: {player.show_hand()}")
+
+    rules.rotate_dealer()
+    print(f"The new dealer is {rules.get_dealer().name}.")
 
 if __name__ == "__main__":
     main()
