@@ -28,7 +28,10 @@ def main():
 
     # Display the trump card and handle the Ace scenario
     trump_card = rules.display_trump_card()
-    rules.deals_ace(trump_card)
+    if trump_card.rank == 'Ace':
+        rules.deals_ace(trump_card)
+    else:
+        rules.check_ace_of_trump(trump_card)
 
     # Display each player's hand
     for player in players:
