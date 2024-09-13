@@ -59,4 +59,23 @@ class Rules:
                                     print(f"{player.name} stole {trump_card.rank} of {trump_card.suit}.")
                                     return
                             print("Invalid card. Please choose a card from your hand.")
-            return None
+
+    def play_turn(self, player):
+        # Player plays one card from their hand
+        print(f"{player.name}'s turn. Hand: {player.show_hand()}")
+        while True:
+            card_to_play = input(f"{player.name}, choose a card to play: ")
+            for card in player.hand:
+                if str(card) == card_to_play:
+                    player.hand.remove(card)
+                    print(f"{player.name} played the {card_to_play}.")
+                    return card
+            print("Invalid card. Please choose a card from your hand.")
+
+    def play_game(self):
+        # Main game loop
+        while any(player.hand for player in self.players):
+            for player in self.players:
+                if player.hand:
+                    self.play_turn(player)
+        print("Game over! All cards have been played.")                            

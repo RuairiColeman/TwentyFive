@@ -30,12 +30,15 @@ def main():
     trump_card = rules.display_trump_card()
     if trump_card.rank == 'Ace':
         rules.deals_ace(trump_card)
-    else:
-        rules.check_ace_of_trump(trump_card)
+    elif rules.check_ace_of_trump(trump_card) == True:
+        print(f"{player.name}'s hand: {player.show_hand()}")
+        
 
     # Display each player's hand
     for player in players:
         print(f"{player.name}'s hand: {player.show_hand()}")
+
+    rules.play_game()
 
     rules.rotate_dealer()
     print(f"The new dealer is {rules.get_dealer().name}.")
