@@ -7,6 +7,7 @@ class Rules:
         self.players = players
         self.dealer_index = 0  # Start with the first player as the dealer
         self.scores = {player.name: 0 for player in players}  # Initialize scores
+        self.trump_suit = None  # Initialize trump suit
 
     def get_dealer(self):
         return self.players[self.dealer_index]
@@ -19,6 +20,7 @@ class Rules:
         # Draw the next card from the deck to be the trump card
         self.deck.shuffle()
         trump_card = self.deck.deal_one()
+        self.trump_suit = trump_card.suit  # Set the trump suit
         print(f"Trumps: {trump_card}")
         return trump_card
 
@@ -85,6 +87,10 @@ class Rules:
 
     def compare_cards(self, card1, card2):
         # Compare two cards based on the rules
+        if card1.suit == self.trump_suit and card2.suit != self.trump_suit:
+            return True
+        if card2.suit == self.trump_suit and card1.suit != self.trump_suit:
+            return False
         if card1.suit == card2.suit:
             if card1.rank in ['K', 'Q', 'J'] and card2.rank in ['K', 'Q', 'J']:
                 return card1.rank > card2.rank
