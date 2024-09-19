@@ -86,11 +86,38 @@ class Rules:
         return winner
 
     def compare_cards(self, card1, card2):
-        # Compare two cards based on the rules
+        # Special trump cards
+        special_trump_cards = {
+            '5': 4,
+            'J': 3,
+            'A': 2
+        }
+
+        # Check for special trump cards
+        if card1.suit == self.trump_suit and card1.rank == '5':
+            return True
+        if card2.suit == self.trump_suit and card2.rank == '5':
+            return False
+        if card1.suit == self.trump_suit and card1.rank == 'J':
+            return True
+        if card2.suit == self.trump_suit and card2.rank == 'J':
+            return False
+        if card1.suit == 'Hearts' and card1.rank == 'A':
+            return True
+        if card2.suit == 'Hearts' and card2.rank == 'A':
+            return False
+        if card1.suit == self.trump_suit and card1.rank == 'A':
+            return True
+        if card2.suit == self.trump_suit and card2.rank == 'A':
+            return False
+
+        # Compare trump suits
         if card1.suit == self.trump_suit and card2.suit != self.trump_suit:
             return True
         if card2.suit == self.trump_suit and card1.suit != self.trump_suit:
             return False
+
+        # Compare cards of the same suit
         if card1.suit == card2.suit:
             if card1.rank in ['K', 'Q', 'J'] and card2.rank in ['K', 'Q', 'J']:
                 return card1.rank > card2.rank
