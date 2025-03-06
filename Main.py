@@ -1,9 +1,11 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 from Deck import Deck
 from Player import Player
 from Rules import Rules
 
 app = Flask(__name__)
+CORS(app)  # Enable CORS for all routes
 
 # Initialize the deck and shuffle
 deck = Deck()
@@ -19,6 +21,11 @@ def create_players():
     players = [Player(name) for name in player_names]
     rules = Rules(players)
     return jsonify({"message": "Players created", "players": player_names})
+
+@app.route('/players', methods=['GET'])
+def get_players():
+    player_names = [player.name for player in players]
+    return jsonify({"message": "Current players", "players": player_names})
 
 @app.route('/deal_cards', methods=['POST'])
 def deal_cards():
