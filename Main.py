@@ -1,47 +1,62 @@
+from flask import Flask, request, jsonify
 from Deck import Deck
 from Player import Player
 from Rules import Rules
 
-def main():
-    # Initialize the deck and shuffle it
-    deck = Deck()
-    deck.shuffle()
+app = Flask(__name__)
 
-    # Create players by prompting for their names
-    player1 = Player(input("Enter player 1's name: "))
-    player2 = Player(input("Enter player 2's name: "))
-    player3 = Player(input("Enter player 3's name: "))
+# Initialize the deck and shuffle
+deck = Deck()
+deck.shuffle()
+players = []
+rules = None
 
-    # List of player names
-    player_names = [player1.name, player2.name, player3.name]
-
-    # Initialize players using the names provided
+# Create players by prompting for their names
+@app.route('/create_players', methods=['POST'])
+def create_players():
+    global players, rules
+    player_names = request.json['player_names']
     players = [Player(name) for name in player_names]
-
-    # Initialize the Rules object with the players
     rules = Rules(players)
+    return jsonify({"message": "Players created", "players": player_names})
 
-    # Deal 5 cards to each player
+@app.route('/deal_cards', methods=['POST'])
+def deal_cards():
     for _ in range(5):
         for player in players:
             player.draw_card(deck)
-
-    # Display the trump card and handle the Ace scenario
+    
+    # Display the trump card immediately after dealing the hands
     trump_card = rules.display_trump_card()
+    
+    # Handle the Ace scenario
     if trump_card.rank == 'Ace':
         rules.deals_ace(trump_card)
-    elif rules.check_ace_of_trump(trump_card) == True:
-        print(f"{player.name}'s hand: {player.show_hand()}")
-        
+    elif rules.check_ace_of_trump(trump_card):
+        return jsonify({"message": f"{player.name}'s hand: {player.show_hand()}"})
+    
+    return jsonify({"message": "Cards dealt and trump card displayed", "trump_card": str(trump_card)})
 
-    # Display each player's hand
-    for player in players:
-        print(f"{player.name}'s hand: {player.show_hand()}")
+@app.route('/display_trump_card', methods=['GET'])
+def display_trump_card():
+    trump_card = rules.display_trump_card()
+    return jsonify({"trump_card": str(trump_card)})
 
+@app.route('/show_hands', methods=['GET'])
+def show_hands():
+    hands = {player.name: player.show_hand() for player in players}
+    return jsonify(hands)
+
+@app.route('/play_game', methods=['POST'])
+def play_game():
     rules.play_game()
+    scores = {player.name: player.score for player in players}
+    return jsonify({"message": "Game played", "scores": scores})
 
+@app.route('/rotate_dealer', methods=['POST'])
+def rotate_dealer():
     rules.rotate_dealer()
-    print(f"The new dealer is {rules.get_dealer().name}.")
+    return jsonify({"new_dealer": rules.get_dealer().name})
 
 if __name__ == "__main__":
-    main()
+    app.run(debug=True)
